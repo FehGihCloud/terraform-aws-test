@@ -11,7 +11,6 @@ provider "aws" {
   region = "us-east-1"
 }
 
-# Bucket S3 para frontend
 resource "aws_s3_bucket" "frontend" {
   bucket = "felipe-terraform-frontend-test"
 }
@@ -23,12 +22,14 @@ resource "aws_s3_bucket_website_configuration" "frontend_site" {
     suffix = "index.html"
   }
 }
+
 resource "aws_s3_object" "index" {
   bucket       = aws_s3_bucket.frontend.id
   key          = "index.html"
   source       = "index.html"
   content_type = "text/html"
 }
+
 resource "aws_s3_bucket_public_access_block" "frontend_public" {
   bucket = aws_s3_bucket.frontend.id
 
@@ -37,8 +38,13 @@ resource "aws_s3_bucket_public_access_block" "frontend_public" {
   ignore_public_acls      = false
   restrict_public_buckets = false
 }
+
 resource "aws_s3_bucket_policy" "frontend_policy" {
   bucket = aws_s3_bucket.frontend.id
+
+  depends_on = [
+    aws_s3_bucket_public_access_block.frontend_public
+  ]
 
   policy = jsonencode({
     Version = "2012-10-17"
