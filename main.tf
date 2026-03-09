@@ -23,3 +23,9 @@ resource "aws_s3_bucket_website_configuration" "frontend_site" {
     suffix = "index.html"
   }
 }
+resource "aws_s3_object" "index" {
+  bucket       = aws_s3_bucket.frontend.id
+  key          = "index.html"
+  source       = "index.html"
+  content_type = "text/html"
+}
